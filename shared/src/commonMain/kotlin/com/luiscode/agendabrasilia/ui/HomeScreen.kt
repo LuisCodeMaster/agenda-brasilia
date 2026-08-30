@@ -1,17 +1,15 @@
 package com.luiscode.agendabrasilia.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,9 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,8 +36,11 @@ fun HomeScreen() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF7F7F7)),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+            .padding(horizontal = 16.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            top = 20.dp,
+            bottom = 16.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -92,8 +91,18 @@ fun HomeScreen() {
             )
         }
 
-        items(filteredEvents) { event ->
-            EventCard(event = event)
+        if (filteredEvents.isEmpty()) {
+            item {
+                Text(
+                    text = "Nenhum evento encontrado.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 20.dp)
+                )
+            }
+        } else {
+            items(filteredEvents) { event ->
+                EventCard(event = event)
+            }
         }
     }
 }
@@ -104,14 +113,13 @@ private fun Header() {
         Text(
             text = "Agenda Brasília",
             fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
-
-        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
             text = "Descubra o que está acontecendo em Brasília",
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -120,14 +128,11 @@ private fun Header() {
 private fun Category(text: String) {
     Text(
         text = text,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
-            .background(
-                Color.White,
-                RoundedCornerShape(12.dp)
-            )
-            .padding(
-                horizontal = 12.dp,
-                vertical = 10.dp
+            .padding(vertical = 4.dp)
+            .then(
+                Modifier
             ),
         fontSize = 13.sp
     )

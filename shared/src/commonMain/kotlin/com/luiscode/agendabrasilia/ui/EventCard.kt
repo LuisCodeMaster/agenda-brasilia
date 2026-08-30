@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,6 +29,9 @@ fun EventCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
         )
@@ -39,24 +42,33 @@ fun EventCard(
         ) {
             Text(
                 text = event.category.uppercase(),
-                color = Color(0xFF1565C0),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 text = event.title,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text("📅 ${event.date} • ${event.time}")
-            Text("📍 ${event.location}")
+            Text(
+                text = "📅 ${event.date} • ${event.time}",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Text(
+                text = "📍 ${event.location}",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             Text(
                 text = event.price,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
         }
