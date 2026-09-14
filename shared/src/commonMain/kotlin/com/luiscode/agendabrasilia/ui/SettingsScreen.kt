@@ -20,10 +20,11 @@ import com.luiscode.agendabrasilia.ui.theme.AppTheme
 @Composable
 fun SettingsScreen(
     currentTheme: AppTheme,
-    onThemeSelected: (AppTheme) -> Unit
+    onThemeSelected: (AppTheme) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.padding(24.dp),
+        modifier = modifier.padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
