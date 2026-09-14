@@ -2,13 +2,15 @@ package com.luiscode.agendabrasilia.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -21,20 +23,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.luiscode.agendabrasilia.data.eventCategories
 import com.luiscode.agendabrasilia.data.sampleEvents
+import com.luiscode.agendabrasilia.model.Event
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onEventClick: (Event) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var searchText by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     val filteredEvents = sampleEvents.filter { event ->
-        event.title.contains(searchText, ignoreCase = true) ||
-            event.category.contains(searchText, ignoreCase = true) ||
-            event.location.contains(searchText, ignoreCase = true)
+        val matchesCategory = selectedCategory == null || event.category == selectedCategory
+        val query = searchText.trim()
+        val matchesSearch = query.isEmpty() ||
+            event.title.contains(query, ignoreCase = true) ||
+            event.category.contains(query, ignoreCase = true) ||
+            event.location.contains(query, ignoreCase = true)
+        matchesCategory && matchesSearch
     }
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(
@@ -72,13 +85,25 @@ fun HomeScreen() {
         }
 
         item {
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Category("🎵 Shows")
-                Category("🎭 Cultura")
-                Category("🎓 Cursos")
+                FilterChip(
+                    selected = selectedCategory == null,
+                    onClick = { selectedCategory = null },
+                    label = { Text("Todos") }
+                )
+                eventCategories.forEach { category ->
+                    FilterChip(
+                        selected = selectedCategory == category,
+                        onClick = {
+                            selectedCategory = if (selectedCategory == category) null else category
+                        },
+                        label = { Text(categoryLabel(category)) }
+                    )
+                }
             }
         }
 
@@ -100,8 +125,11 @@ fun HomeScreen() {
                 )
             }
         } else {
-            items(filteredEvents) { event ->
-                EventCard(event = event)
+            items(filteredEvents, key = { it.id }) { event ->
+                EventCard(
+                    event = event,
+                    onClick = { onEventClick(event) }
+                )
             }
         }
     }
@@ -111,29 +139,25 @@ fun HomeScreen() {
 private fun Header() {
     Column {
         Text(
-            text = "Agenda Brasília",
+            text = "Rowlê",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
         )
 
         Text(
-            text = "Descubra o que está acontecendo em Brasília",
+            text = "Descubra o rolê em Brasília",
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
-@Composable
-private fun Category(text: String) {
-    Text(
-        text = text,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .then(
-                Modifier
-            ),
-        fontSize = 13.sp
-    )
+private fun categoryLabel(category: String): String {
+    val emoji = when (category) {
+        "Shows" -> "🎵"
+        "Cultura" -> "🎭"
+        "Tecnologia" -> "💻"
+        else -> "📌"
+    }
+    return "$emoji $category"
 }
